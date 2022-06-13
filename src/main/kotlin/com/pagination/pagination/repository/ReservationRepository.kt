@@ -19,6 +19,7 @@ class ReservationRepository {
     val logger = LoggerFactory.getLogger(ReservationRepository::class.java)
 
     fun addDummyReservation(numParam: Int) {
+        MySQLConnection.init()
         Reservation.new {
             title = "${numParam}번째 제목입니다."
             num = numParam
@@ -26,18 +27,20 @@ class ReservationRepository {
     }
 
     fun findReservationsByNowPage(pageNum: Int): List<Reservation> {
-
-        val query = Reservations.selectAll().limit(1, pageNum)
+        MySQLConnection.init()
+        var reservations: List<Reservation> = emptyList()
+        transaction {
+            val query = Reservations.selectAll()
 //            .orderBy(Reservations.id to SortOrder.DESC)
-            .limit(
-                Constants.ReservationPagination.ROWS_COUNT,
-                Constants.ReservationPagination.ROWS_COUNT * (pageNum - 1)
-            )
-        val reservations = Reservation.wrapRows(query).toList()
-        reservations.forEach {
-            logger.info(it.title)
+                .limit(
+                    Constants.ReservationPagination.ROWS_COUNT,
+                    Constants.ReservationPagination.ROWS_COUNT * (pageNum - 1)
+                )
+            reservations = Reservation.wrapRows(query).toList()
+            reservations.forEach {
+                logger.info(it.title)
+            }
         }
-
         return reservations
     }
 }

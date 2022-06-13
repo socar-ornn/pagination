@@ -2,6 +2,7 @@ package com.pagination.pagination.service
 
 import com.pagination.pagination.common.Constants
 import com.pagination.pagination.dto.GetReservationResults
+import com.pagination.pagination.dto.ReservationDto
 import com.pagination.pagination.repository.ReservationRepository
 import org.springframework.stereotype.Service
 
@@ -15,7 +16,11 @@ class ReservationService(
         val nextFirstPage = calculateFirstPage(pageNum)
         val nextLastPage = calculateLastPage(pageNum)
 
-        return GetReservationResults(reservations, nextFirstPage, nextLastPage)
+        return GetReservationResults(
+            reservations = reservations.map { ReservationDto.fromReservation(it) },
+            nextFirstPage = nextFirstPage,
+            nextLastPage = nextLastPage
+        )
     }
 
     private fun calculateFirstPage(pageNum: Int): Int {

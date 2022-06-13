@@ -1,5 +1,6 @@
 package com.pagination.pagination.controller
 
+import com.pagination.pagination.domain.Reservation
 import com.pagination.pagination.dto.GetReservationResults
 import com.pagination.pagination.service.ReservationService
 import org.springframework.web.bind.annotation.GetMapping

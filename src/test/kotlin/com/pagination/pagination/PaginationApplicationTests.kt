@@ -9,6 +9,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -22,13 +23,16 @@ class PaginationApplicationTests {
 	@Autowired
 	lateinit var reservationRepository: ReservationRepository
 
+	@BeforeEach
+	fun initDataBase() {
+		MySQLConnection.init()
+	}
 
 	@Test
-	fun `test코드입니다`() {
-		MySQLConnection.init()
+	fun `13번째 페이지의 예약내역을 호출했을 때 게시글은 144번째 게시글이다`() {
 		transaction {
 			addLogger(StdOutSqlLogger)
-//			SchemaUtils.create(Reservations)
+			SchemaUtils.create(Reservations)
 			repeat(1234) {
 				reservationRepository.addDummyReservation(it)
 			}
@@ -41,16 +45,6 @@ class PaginationApplicationTests {
 			Assertions.assertThat(findReservationsByNowPage.nextFirstPage).isEqualTo(11)
 			Assertions.assertThat(findReservationsByNowPage.nextLastPage).isEqualTo(20)
 			Assertions.assertThat(findReservationsByNowPage.reservations[0].num).isEqualTo(144)
-		}
-
-
-	}
-
-	@Test
-	fun `Dao test`() {
-		MySQLConnection.init()
-		transaction {
-			reservationRepository.addDummyReservation(1234);
 		}
 	}
 }
